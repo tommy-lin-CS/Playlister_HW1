@@ -43,11 +43,13 @@
 }
 
 .modal-north {
-  font-size:32pt;
+  font-size: 32pt;
   font-weight: bold;
   background-color: #669966;
   color:white;
 }
+
+
 
 .modal-center {
   display: grid;
@@ -55,6 +57,7 @@
   grid-template-rows: 33% 33% 33%;
   gap: 10px 20px;
   font-size: 48pt;
+  padding-bottom: 10px;
 }
 
 span {
@@ -93,6 +96,39 @@ span {
 
 .modal p + p {
   margin-top: 1rem;
+}
+
+.modal-song-north {
+  font-size: 26pt;
+  font-weight: bold;
+  background-color: #669966;
+  color:white;
+}
+
+.modal-edit-song {
+  display: inline-block;
+  width: 350px;
+  font-size: 22pt;
+  padding-top: 10px;
+}
+
+.modal-song-content-input {
+  float: right;
+  font-size: 20px;
+  padding: 0;
+}
+
+.song-modal-button {
+  margin: 5px;
+}
+
+.modal-song-south {
+  display:flex;
+  flex-direction: row;
+  background-color: lightgray;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
 }
 
 /* ANIMATIONS

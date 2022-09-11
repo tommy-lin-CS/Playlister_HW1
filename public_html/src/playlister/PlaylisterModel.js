@@ -1,6 +1,9 @@
 import jsTPS from "../common/jsTPS.js";
 import Playlist from "./Playlist.js";
+import AddSong_Transaction from "./transactions/AddSong_Transaction.js";
+import DeleteSong_Transaction from "./transactions/DeleteSong_Transaction.js";
 import MoveSong_Transaction from "./transactions/MoveSong_Transaction.js";
+import EditSong_Transaction from "./transactions/EditSong_Transaction.js";
 
 /**
  * PlaylisterModel.js
@@ -15,7 +18,7 @@ import MoveSong_Transaction from "./transactions/MoveSong_Transaction.js";
  * inside the view of the page.
  * 
  * @author McKilla Gorilla
- * @author ?
+ * @author Tommy Lin
  */
 export default class PlaylisterModel {
     /*
@@ -48,6 +51,11 @@ export default class PlaylisterModel {
 
     refreshToolbar() {
         this.view.updateToolbarButtons(this);
+    }
+
+    refreshPlaylist() {
+        this.view.refreshPlaylist(this.currentList);
+        this.saveLists();
     }
     
     // FIRST WE HAVE THE ACCESSOR (get) AND MUTATOR (set) METHODS
@@ -218,6 +226,7 @@ export default class PlaylisterModel {
     deleteList(id) {
         let toBeDeleted = this.playlists[this.getListIndex(id)];
         this.playlists = this.playlists.filter(list => list.id !== id);
+        
         this.view.refreshLists(this.playlists)
         // 2 cases, deleted is current list
         // deleted is not current list
@@ -232,6 +241,29 @@ export default class PlaylisterModel {
         this.saveLists();
     }
 
+    // DELETE THE LATEST SONG ADDED TO THE PLAYLIST
+    deleteTheLastSong() {
+        let givenIndex = (this.currentList.songs.length - 1);
+        this.currentList.songs.splice(givenIndex, 1);
+        this.view.refreshPlaylist(this.currentList);
+        this.saveLists();
+    }
+
+    // DELETE A SONG
+    deleteSong(id) {
+        let toBeDeleted = this.currentList.songs[id - 1];
+        this.currentList.songs = this.currentList.songs.filter(song => song.id !== id - 1);
+
+        this.view.refreshPlaylist(this.currentList);
+
+        if(toBeDeleted == this.currentList.songs) {
+            this.currentList.songs = null;
+            this.view.clearWorkspace
+            this.view.updateStatusBar(this.currentList.songs);
+        }
+        this.saveLists();
+    }
+
     // NEXT WE HAVE THE FUNCTIONS THAT ACTUALLY UPDATE THE LOADED LIST
 
     moveSong(fromIndex, toIndex) {
@@ -240,8 +272,39 @@ export default class PlaylisterModel {
             tempArray.splice(toIndex, 0, this.currentList.getSongAt(fromIndex))
             this.currentList.songs = tempArray;
             this.view.refreshPlaylist(this.currentList);
+
         }
         this.saveLists();
+    }
+
+    // ADD SONG DEFAULT DETAILS
+    addDefaultSongDetails() {
+        if(this.hasCurrentList()) {
+            this.currentList.songs.push( {
+                "title": "Untitled",
+                "artist": "Unknown",
+                "youTubeId": "dQw4w9WgXcQ"
+            })
+            this.view.refreshPlaylist(this.currentList);
+        }
+        this.saveLists();
+    }
+
+    // ADD SONG DETAILS GIVEN ALL THE COMPONENTS
+    addSongGivenAllComponents(index, title, artist, ytid) {
+        this.currentList.songs[index] = {
+            "title": title,
+            "artist": artist,
+            "youTubeId": ytid
+        }
+        this.view.refreshPlaylist(this.currentList);
+        this.saveLists();
+    }
+    
+    // ADDS THE SONG TO INDEX
+    addSongGivenIndex(song, id) {
+        this.currentList.songs.splice(id, 0, song); // splice method: (add to index, remove none, add content)
+        this.view.refreshPlaylist(this.currentList);
     }
 
     // SIMPLE UNDO/REDO FUNCTIONS, NOTE THESE USE TRANSACTIONS
@@ -268,4 +331,25 @@ export default class PlaylisterModel {
         this.tps.addTransaction(transaction);
         this.view.updateToolbarButtons(this);
     }
+
+    addSongTransaction() {
+        let transaction = new AddSong_Transaction(this);
+        this.tps.addTransaction(transaction);
+        this.view.updateToolbarButtons(this);
+    }
+
+    deleteSongTransaction(song, id) {
+        let transaction = new DeleteSong_Transaction(this, song, id);
+        this.tps.addTransaction(transaction);
+        this.view.updateToolbarButtons(this);
+    }
+
+    editSongTransaction(originalIndex, originalTitle, originalArtist, originalYtid,
+        newIndex, newTitle, newArtist, newYtid) {
+            let transaction = new EditSong_Transaction(this, originalIndex, originalTitle, originalArtist, originalYtid,
+                newIndex, newTitle, newArtist, newYtid);
+            this.tps.addTransaction(transaction);
+            this.view.updateToolbarButtons(this);
+        }
+
 }

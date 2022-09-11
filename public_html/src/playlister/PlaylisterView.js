@@ -5,7 +5,7 @@
  * for loading data into our controls and building other UI controls.
  * 
  * @author McKilla Gorilla
- * @author ?
+ * @author Tommy Lin
  */
 export default class PlaylisterView {
     constructor() {}
@@ -18,9 +18,11 @@ export default class PlaylisterView {
     init() {
         // @todo - ONCE YOU IMPLEMENT THE FOOLPROOF DESIGN STUFF YOU SHOULD PROBABLY
         // START THESE BUTTONS OFF AS DISABLED
-        this.enableButton('undo-button');
-        this.enableButton('redo-button');
-        this.enableButton('close-button');
+        this.enableButton('add-list-button');
+        this.disableButton('add-song-button');
+        this.disableButton('undo-button');
+        this.disableButton('redo-button');
+        this.disableButton('close-button');
     }
 
     /*
@@ -109,17 +111,39 @@ export default class PlaylisterView {
             // MAKE AN ITEM (i.e. CARD)
             let song = playlist.getSongAt(i);
             let itemDiv = document.createElement("div");
+            song.id = i; // EACH SONG HAS AN UNIQUE ID
             itemDiv.classList.add("list-card");
             itemDiv.classList.add("unselected-list-card");
             itemDiv.id = "playlist-card-" + (i + 1);
+            
+            // ADD NUMBERING IN FRONT OF THE SONG NAME
+            let numbering = document.createTextNode(i + 1 + ". ");
+            itemDiv.appendChild(numbering);
 
-            // PUT THE CONTENT INTO THE CARD
-            let itemText = document.createTextNode(song.title + " by " + song.artist);
-            itemDiv.appendChild(itemText);
+            // CREATE LINK AND EMBED TITLE AND ARTIST INTO LINK!
+            let songLink = document.createElement("a");
+            songLink.href = "https://www.youtube.com/watch?v=" + song.youTubeId;
+            songLink.innerHTML = song.title + " by " + song.artist;
+
+            songLink.setAttribute("song-title", song.title);
+            songLink.setAttribute("song-artist", song.artist);
+            songLink.setAttribute("song-ytid", song.youTubeId);
+            itemDiv.appendChild(songLink);
+             
+            // MAKE THE DELETE LIST BUTTON FOR THIS CARD
+            
+            let deleteSongButton = document.createElement("input");
+            deleteSongButton.setAttribute("type", "button");
+            deleteSongButton.setAttribute("id", "song-" + (i + 1));
+            deleteSongButton.setAttribute("class", "list-card-button");
+            deleteSongButton.setAttribute("index", i + 1);
+            deleteSongButton.setAttribute("value", "X");
 
             // AND PUT THE CARD INTO THE UI
             itemsDiv.appendChild(itemDiv);
-        }
+            itemDiv.appendChild(deleteSongButton);
+        }        
+
         // NOW THAT THE CONTROLS EXIST WE CAN REGISTER EVENT
         // HANDLERS FOR THEM
         this.controller.registerItemHandlers();
@@ -195,18 +219,55 @@ export default class PlaylisterView {
     */
     updateToolbarButtons(model) {
         let tps = model.tps;
+        // DISABLED UNDO BUTTON WHEN THERE IS NO UNDO TRANSACTIONS
+        if(model.tps.getUndoSize() != 0) {
+            this.enableButton("undo-button");
+        }
+        else {
+            this.disableButton("undo-button");
+        }
+        
+        // DISABLED REDO BUTTON WHEN THERE IS NO REDO TRANSACTIONS
+        if(model.tps.getRedoSize() != 0) {
+            this.enableButton("redo-button");
+        }
+        else {
+            this.disableButton("redo-button");
+        }
+
+        // DISABLES ALL BUTTONS WHEN THE MODAL IS OPENED
         if (model.confirmDialogOpen) {
             this.disableButton("add-list-button");
+            this.disableButton("add-song-button");
             this.disableButton("undo-button");
             this.disableButton("redo-button");
             this.disableButton("close-button");
+        }
+
+        // ENABLES THE ADD LIST BUTTON, ADD SONG BUTTON, AND CLOSE BUTTON
+        // WHEN THE MODAL IS CLOSED
+        if(!model.confirmDialogOpen) {
+            this.enableButton("add-list-button");
+            this.enableButton("add-song-button");
+            this.enableButton("close-button");
+        }
+
+        // DISABLED CLOSE LIST BUTTON WHEN NO LIST IS SELECTED
+        if(model.currentList == null) {
+            this.disableButton("close-button");
+            this.disableButton("add-song-button");
+        }
+        
+        // DISABLED ADD LIST BUTTON WHEN A LIST IS CURRENTLY OPENED
+        if(model.currentList != null) {
+            this.disableButton("add-list-button");
         }
     }
 
     /*
         updateStatusBar
 
-        Displays the name of the loaded list in the status bar.
+        Displays the name of the loaded list in the status bar. 
     */
     updateStatusBar(model) {
         let statusBar = document.getElementById("statusbar");

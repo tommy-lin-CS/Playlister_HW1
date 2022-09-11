@@ -11,7 +11,7 @@
     will be added in future versions.
     
     @author McKilla Gorilla
-    @author ?
+    @author Tommy Lin
 -->
 
 <head>
@@ -45,6 +45,7 @@
         <div id="sidebar-list">
         </div>
         <div id="edit-toolbar">
+            <input type="button" id='add-song-button' value="+" class="toolbar-button" /> <!-- Add song button added -->
             <input type="button" id='undo-button' value="⟲" class="toolbar-button" />
             <input type="button" id='redo-button' value="⟳" class="toolbar-button" />
             <input type="button" id='close-button' value="&#x2715;" class="toolbar-button" />
@@ -67,6 +68,53 @@
                 <div class="modal-south">
                     <input type="button" id="delete-list-confirm-button" class="modal-button" value='Confirm' />
                     <input type="button" id="delete-list-cancel-button" class="modal-button" value='Cancel' />
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL (i.e. dialog) FOR EDITING THE CONTENT OF THE SONG -->
+        <div class="modal" id="edit-song-content" data-animation="slideInOutLeft">
+            <div class="modal-root" id="edit-song-modal">
+                <div class="modal-song-north">
+                    Edit song
+                </div>
+                <div class="modal-center">
+                    <div class="modal-edit-song">
+                        <div>
+                            <span>Title: </span>
+                            <input id="form-song-title" type="text" class="modal-song-content-input" />
+                        </div>
+                        <div>
+                            <span>Artist: </span>
+                            <input id="form-song-artist" type="text" class="modal-song-content-input" />
+                        </div>
+                        <div>
+                            <span>YouTube Id: </span>
+                            <input id="form-song-ytid" type="text" class="modal-song-content-input" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-song-south">
+                    <input type="button" id="edit-song-confirm-button" class="song-modal-button" value='Confirm' />
+                    <input type="button" id="edit-song-cancel-button" class="song-modal-button" value='Cancel' />
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL (i.e. dialog) FOR VERIFYING THE DELETION OF A SONG -->
+        <div class="modal" id="delete-song-modal" data-animation="slideInOutLeft">
+            <div class="modal-root" id='verify-delete-list-root'>
+                <div class="modal-north">
+                    Remove song?
+                </div>                
+                <div class="modal-center">
+                    <div class="modal-center-content">
+                        Are you sure you wish to permanently remove <span id="delete-song-span"></span> from the playlist?
+                    </div>
+                </div>
+                <div class="modal-south">
+                    <input type="button" id="delete-song-confirm-button" class="modal-button" value='Confirm' />
+                    <input type="button" id="delete-song-cancel-button" class="modal-button" value='Cancel' />
                 </div>
             </div>
         </div>
