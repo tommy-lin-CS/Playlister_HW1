@@ -1,3 +1,9 @@
 # Playlister_HW1
+App Version 1.0
 
-https://www3.cs.stonybrook.edu/~cse316/hw/HW1.html
+Assignment Description: https://www3.cs.stonybrook.edu/~cse316/hw/HW1.html
+
+This project is built using Vanilla Javascript.
+
+## Functions
+### Interface
