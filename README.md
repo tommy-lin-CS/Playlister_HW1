@@ -1,5 +1,4 @@
-# Playlister_HW1
-App Version 1.0
+# Playlister 1.0
 
 Assignment Description: https://www3.cs.stonybrook.edu/~cse316/hw/HW1.html
 
